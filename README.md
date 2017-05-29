@@ -1,4 +1,7 @@
-# Pilot
+<p align="center" >
+<img src="https://github.com/metismachine/pilot/blob/master/pilot.png?raw=true" alt="Pilot" title="Pilot">
+</p>
+<h1 align="center">Pilot</h1>
 
 **TODO: Add description**
 
