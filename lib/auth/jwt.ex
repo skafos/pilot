@@ -2,10 +2,30 @@ defmodule Pilot.Auth.JWT do
   @moduledoc """
   JWT (JSON Web Token) Auth handler.
   """
-
+  import Plug.Conn
+  import Pilot.Responses
   require Logger
   
-  @auth_secret Application.get_env(:pilot, :auth_secret)
+  @behaviour Pilot.Auth.Adapter
+
+  @doc """
+  Creates a new JWT based on given properties
+
+  ## Parameters
+  - params: Map of properties (and values) used to create a token
+
+  ## Example
+      Pilot.Auth.JWT.create(%{username: "wess", id: "1"})
+  """
+  def auth_create(params, config \\ :pilot) do
+    secret = Application.get_env(config, :auth_secret)
+    
+    params
+    |> Joken.token()
+    |> Joken.with_signer(Joken.hs256(secret))
+    |> Joken.sign()
+    |> Joken.get_compact()
+  end
 
   @doc """
   Verifies provided token
@@ -21,13 +41,24 @@ defmodule Pilot.Auth.JWT do
           error
       end
   """
-  def verify(payload) do
-    signed = Joken.hs256(@auth_secret)
+  def auth_verify(conn, config \\ :pilot) do
+    case jwt_verify(conn |> auth_header_token, config) do
+      {:ok, _token} ->
+        conn
+      {:error, error} ->
+        conn
+        |> json(:unauthorized, %{error: error})
+      _ ->
+        conn
+    end
+  end
+
+  defp jwt_verify(payload, config) do
+    secret = Application.get_env(config, :auth_secret)
 
     jwt = payload
-          |> to_string()
           |> Joken.token()
-          |> Joken.with_signer(signed)
+          |> Joken.with_signer(Joken.hs256(secret))
           |> Joken.verify
 
     case jwt.error do
@@ -38,20 +69,12 @@ defmodule Pilot.Auth.JWT do
     end
   end
 
-  @doc """
-  Creates a new JWT based on given properties
-
-  ## Parameters
-  - params: Map of properties (and values) used to create a token
-
-  ## Example
-      Pilot.Auth.JWT.create(%{username: "wess", id: "1"})
-  """
-  def  create(params) do
-    params
-    |> Joken.token()
-    |> Joken.with_signer(Joken.hs256(@auth_secret))
-    |> Joken.sign()
-    |> Joken.get_compact()
+  defp auth_header_token(conn) do
+    get_req_header(conn, "authorization") 
+    |> header_token
   end
+  
+  defp header_token(["Bearer " <> token]), do: token
+  defp header_token(_), do: nil
+
 end
