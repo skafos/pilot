@@ -1,5 +1,5 @@
 <p align="center" >
-<img src="https://github.com/metismachine/pilot/blob/master/pilot.png?raw=true" alt="Pilot" title="Pilot" width=100 height=100>
+<img src="https://github.com/metismachine/pilot/blob/master/pilot.png?raw=true" alt="Pilot" title="Pilot" height=100>
 </p>
 
 **TODO: Add description**
