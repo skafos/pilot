@@ -18,6 +18,5 @@ before_install:
   - mix compile
   - mix test
 
-
 notifications:
   email: false
