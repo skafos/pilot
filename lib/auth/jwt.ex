@@ -19,7 +19,7 @@ defmodule Pilot.Auth.JWT do
   """
   def auth_create(params, config \\ :pilot) do
     secret = Application.get_env(config, :auth_secret)
-
+    
     params
     |> Joken.token()
     |> Joken.with_signer(Joken.hs256(secret))
@@ -57,9 +57,8 @@ defmodule Pilot.Auth.JWT do
     secret = Application.get_env(config, :auth_secret)
 
     jwt = payload
-          |> to_string()
           |> Joken.token()
-          |> Joken.with_signer(secret)
+          |> Joken.with_signer(Joken.hs256(secret))
           |> Joken.verify
 
     case jwt.error do
