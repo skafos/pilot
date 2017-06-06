@@ -1,8 +1,7 @@
 <p align="center" >
 <img src="https://github.com/metismachine/pilot/blob/master/pilot.png?raw=true" alt="Pilot" title="Pilot" height=100>
+<h1>Pilot</h1>
 </p>
-
-**TODO: Add description**
 
 ## Installation
 
