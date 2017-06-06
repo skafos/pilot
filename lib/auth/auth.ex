@@ -7,7 +7,7 @@ defmodule Pilot.Auth do
   import Plug.Conn
   use Pilot.Responses
 
-  alias Pilot.Auth.JWT
+  @adapter Application.get_env(:pilot, :adapter)
 
   @doc false
   def init(opts \\ []) do
@@ -28,7 +28,6 @@ defmodule Pilot.Auth do
   Creates authorization based on provided type
   
   ## Parameters
-  - conn: Current Plug.Conn (request)
   - params: Params to use for authentication
 
   ## Example
@@ -41,9 +40,7 @@ defmodule Pilot.Auth do
         end
       end
   """
-  def create(_conn, params) do
-    JWT.create(params)
-  end
+  defdelegate create(params), to: @adapter, as: :auth_create
 
   @doc """
   Verifies authentication based on provided type.
@@ -56,24 +53,5 @@ defmodule Pilot.Auth do
         json(:ok, %{hello: "world"})
       end
   """
-  def verify(conn) do
-    case JWT.verify(conn |> auth_header_token) do
-      {:ok, _token} ->
-        conn
-      {:error, error} ->
-        conn
-        |> json(:unauthorized, %{error: error})
-      _ ->
-        conn
-      
-    end
-  end
-
-  defp auth_header_token(conn) do
-    get_req_header(conn, "authorization") 
-    |> header_token
-  end
-  
-  defp header_token(["Bearer " <> token]), do: token
-  defp header_token(_), do: nil
+  defdelegate verify(conn), to: @adapter, as: :auth_verify
 end
