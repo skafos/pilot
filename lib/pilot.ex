@@ -1,33 +1,18 @@
-defmodule User do
-  require Logger
-
-  use Router
-
-  def route(conn, "GET", ["users", user_id]) do
-    conn
-    |> Plug.Conn.send_resp(200, "User id #{user_id}")
-  end
-end
-
 defmodule Pilot do
-  require Logger
+  defmacro __using__(_) do
+    quote location: :keep do
+      import Plug.Conn
 
-  use Router
+      use Plug.Router
+      use Pilot.Responses
 
-  def start(_, _), do: :ok
+      import unquote(__MODULE__)
 
-  def route(conn, "GET", ["hello"]) do
-    conn
-    |> Plug.Conn.send_resp(200, "Hello World!")
-  end
-
-  @user_options User.init([])
-  def route(conn, "GET", ["users", _path]) do
-    User.call(conn, @user_options)
-  end
-
-  def route(conn, _method, _path) do
-    conn
-    |> Plug.Conn.send_resp(200, "Default action")
+      plug Plug.Parsers, 
+        parsers: [:urlencoded, :multipart, :json],
+        pass: ["*/*"],
+        json_decoder: Poison
+    end
   end
 end
+
