@@ -2,6 +2,8 @@
 <img src="https://github.com/metismachine/pilot/blob/master/pilot.png?raw=true" alt="Pilot" title="Pilot">
 </p>
 
+[![Build Status](https://travis-ci.com/MetisMachine/pilot.svg?token=WRZ9mPpCKxCTYnBRpUzg&branch=master)](https://travis-ci.com/MetisMachine/pilot)
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
