@@ -15,12 +15,6 @@ defmodule PilotTest do
     |> assert_redirect("/test/path")
   end
 
-  test "ensure redirect location header can't be subverted." do
-    test_conn()
-    |> redirect("/test/path", [resp_headers: %{"location" => "/test/diff-path"}])
-    |> assert_redirect("/test/path")
-  end
-
   test "ensure status is properly set for return response" do
     test_conn()
     |> status(404)
@@ -29,14 +23,14 @@ defmodule PilotTest do
 
   test "ensure status properly sets headers for return response" do
     test_conn()
-    |> status(404, [resp_headers: %{"x-foo" => "bar"}])
+    |> status(404, resp_headers: %{"x-foo" => "bar"})
     |> assert_status(404)
     |> assert_header({"x-foo", "bar"})
   end
 
   test "ensure text body and text/plain content type is in the response" do
     assert test_conn()
-           |> text("testing text", [status: :ok, resp_headers: %{"x-foo" => "bar"}])
+           |> text(:ok, "testing text", resp_headers: %{"x-foo" => "bar"})
            |> assert_state()
            |> assert_status(200)
            |> assert_header({"x-foo", "bar"})
@@ -48,7 +42,7 @@ defmodule PilotTest do
 
   test "ensure html body and text/html content type is in the response" do
      assert test_conn()
-            |> html("<h1>testing html</h1>", [status: :ok, resp_headers: %{"x-foo" => "bar"}])
+            |> html(:ok, "<h1>testing html</h1>", resp_headers: %{"x-foo" => "bar"})
             |> assert_state()
             |> assert_status(200)
             |> assert_header({"x-foo", "bar"})
@@ -60,7 +54,7 @@ defmodule PilotTest do
 
   test "ensure json body and content type" do
     assert test_conn()
-           |> json(%{hello: "world"}, [status: :ok, resp_headers: %{"x-foo" => "bar"}])
+           |> json(:ok, %{hello: "world"}, resp_headers: %{"x-foo" => "bar"})
            |> assert_state()
            |> assert_status(200)
            |> assert_header({"x-foo", "bar"})

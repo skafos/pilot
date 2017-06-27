@@ -17,21 +17,21 @@ defmodule Pilot.Responses do
 
   ## Parameters
   - conn: HTTP connection to send response to.
+  - status: Atom or number that represents HTTP response code.
   - data: Struct to be encoded to JSON as the response body.
   - opts: Keyword list of options, supports
-          - status: Atom or number that represents HTTP response code.
           - resp_headers: Map or list of 2-tuple response headers
                           to be added to the response
 
   ## Example
-      conn |> json(%{hello: "World"})
+      conn |> json(:ok, %{hello: "World"})
+      conn |> json(:ok, %{hello: "World"}, resp_headers: %{"x-foo" => "bar"})
   """
-  def json(conn, data, opts \\ []) do
-    status = Keyword.get(opts, :status, :ok)
+  def json(conn, status, data, opts \\ []) do
     resp_headers = Keyword.get(opts, :resp_headers, [])
-    json(conn, data, status, resp_headers)
+    do_json(conn, status, data, resp_headers)
   end
-  defp json(conn, data, status, resp_headers) do
+  defp do_json(conn, status, data, resp_headers) do
     conn
     |> Plug.Conn.merge_resp_headers(resp_headers)
     |> Plug.Conn.put_resp_content_type("application/json")
@@ -40,25 +40,25 @@ defmodule Pilot.Responses do
   end
 
   @doc """
-  Sends a HTML response
+  Sends an HTML response
 
   ## Parameters
   - conn: HTTP connection to send response to.
+  - status: Atom or number that represents HTTP response code.
   - data: HTML string set as the response body.
   - opts: Keyword list of options, supports
-          - status: Atom or number that represents HTTP response code.
           - resp_headers: Map or list of 2-tuple response headers
                           to be added to the response
 
   ## Example
       conn |> html("<h1>Hello World</h1>")
+      conn |> html(:ok, "<h1>Hello World</h1>", resp_headers: %{"x-foo" => "bar"})
   """
-  def html(conn, data, opts \\ []) do
-    status = Keyword.get(opts, :status, :ok)
+  def html(conn, status, data, opts \\ []) do
     resp_headers = Keyword.get(opts, :resp_headers, [])
-    do_html(conn, data, status, resp_headers)
+    do_html(conn, status, data, resp_headers)
   end
-  defp do_html(conn, data, status, resp_headers) do
+  defp do_html(conn, status, data, resp_headers) do
     conn
     |> Plug.Conn.merge_resp_headers(resp_headers)
     |> Plug.Conn.put_resp_content_type("text/html")
@@ -67,25 +67,25 @@ defmodule Pilot.Responses do
   end
 
   @doc """
-  Sends a HTML response
+  Sends an HTML response
 
   ## Parameters
   - conn: HTTP connection to send response to.
+  - status: Atom or number that represents HTTP response code.
   - data: Text string set as the response body.
   - opts: Keyword list of options, supports
-          - status: Atom or number that represents HTTP response code.
           - resp_headers: Map or list of 2-tuple response headers
                           to be added to the response
 
   ## Example
-      conn |> text("Hello World!")
+      conn |> text(:ok, "Hello World!")
+      conn |> text(:ok, "Hello World!", resp_headers: %{"x-foo" => "bar"})
   """
-  def text(conn, data, opts \\ []) do
-    status = Keyword.get(opts, :status, :ok)
+  def text(conn, status, data, opts \\ []) do
     resp_headers = Keyword.get(opts, :resp_headers, [])
-    do_text(conn, data, status, resp_headers)
+    do_text(conn, status, data, resp_headers)
   end
-  defp do_text(conn, data, status, resp_headers) do
+  defp do_text(conn, status, data, resp_headers) do
     conn
     |> Plug.Conn.merge_resp_headers(resp_headers)
     |> Plug.Conn.put_resp_content_type("text/plain")
@@ -122,23 +122,15 @@ defmodule Pilot.Responses do
 
   ## Parameters
   - conn: HTTP connection to redirect.
+  - status: Atom or number that represents HTTP response code.
   - url:  String representing URL/URI destination.
-  - opts: Keyword list of options, supports
-          - status: Atom or number that represents HTTP response code.
-          - resp_headers: Map or list of 2-tuple response headers
-                          to be added to the response
 
   ## Example
       conn |> redirect("http://<foo>.com/")
+      conn |> redirect(301, "http://<foo>.com/")
   """
-  def redirect(conn, url, opts \\ []) do
-    status = Keyword.get(opts, :status, 302)
-    resp_headers = Keyword.get(opts, :resp_headers, [])
-    do_redirect(conn, url, status, resp_headers)
-  end
-  defp do_redirect(conn, url, status, resp_headers) do
+  def redirect(conn, status \\ 302, url) do
     conn
-    |> Plug.Conn.merge_resp_headers(resp_headers)
     |> Plug.Conn.put_resp_header("location", url)
     |> Plug.Conn.send_resp(status, "")
     |> Plug.Conn.halt()
