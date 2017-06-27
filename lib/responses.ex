@@ -8,13 +8,13 @@ defmodule Pilot.Responses do
   defmacro __using__(_) do
     quote do
       import Plug.Conn
-      import unquote(__MODULE__) 
+      import unquote(__MODULE__)
     end
   end
 
   @doc """
   Sends a JSON response
-  
+
   ## Parameters
   - conn:   HTTP connection to send response to.
   - status: Atom or number that represents HTTP response code.
@@ -26,13 +26,13 @@ defmodule Pilot.Responses do
   def json(conn, status, data) do
     conn
     |> Plug.Conn.put_resp_content_type("application/json")
-    |> Plug.Conn.send_resp(status, Poison.encode_to_iodata!(data))    
+    |> Plug.Conn.send_resp(status, Poison.encode_to_iodata!(data))
     |> Plug.Conn.halt()
   end
 
   @doc """
   Sends a HTML response
-  
+
   ## Parameters
   - conn:   HTTP connection to send response to.
   - status: Atom or number that represents HTTP response code.
@@ -50,7 +50,7 @@ defmodule Pilot.Responses do
 
   @doc """
   Sends a HTML response
-  
+
   ## Parameters
   - conn:   HTTP connection to send response to.
   - status: Atom or number that represents HTTP response code.
@@ -68,7 +68,7 @@ defmodule Pilot.Responses do
 
   @doc """
   Sends a status _only_ response
-  
+
   ## Parameters
   - conn:   HTTP connection to send response to.
   - status: Atom or number that represents HTTP response code.
@@ -91,7 +91,7 @@ defmodule Pilot.Responses do
   - status: Atom or number that represents HTTP response code.
 
   ## Example
-      conn |> redirect("http://metismachine.com/")
+      conn |> redirect("http://<foo>.com/")
   """
   def redirect(conn, url, status \\ 302) do
     conn
