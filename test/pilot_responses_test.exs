@@ -1,4 +1,4 @@
-defmodule PilotTest do
+defmodule Pilot.Tests.Responses do
   require Logger
   use ExUnit.Case
 
@@ -7,7 +7,7 @@ defmodule PilotTest do
 
   use Pilot.Responses
 
-  doctest Pilot
+  doctest Pilot.Responses
 
   test "ensure redirect status and headers are set." do
     test_conn()

@@ -4,6 +4,7 @@ defmodule Pilot do
       import Plug.Conn
 
       use Plug.Router
+      use Plug.ErrorHandler
       use Pilot.Responses
 
       import unquote(__MODULE__)
