@@ -1,5 +1,8 @@
 defmodule Example do
-  def hello do
-    :world
+  require Logger
+  use Pilot.Router
+
+  get "/test" do
+    "Hello, World"
   end
 end
