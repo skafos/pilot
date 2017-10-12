@@ -2,24 +2,21 @@
 # and its dependencies with the aid of the Mix.Config module.
 use Mix.Config
 
-config :pilot, Example,
-  port: 8080
-
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this
 # file won't be loaded nor affect the parent project. For this reason,
 # if you want to provide default values for your application for
 # 3rd-party users, it should be done in your "mix.exs" file.
 
-# You can configure for your application as:
+# You can configure your application as:
 #
 #     config :example, key: :value
 #
-# And access this configuration in your application as:
+# and access this configuration in your application as:
 #
 #     Application.get_env(:example, :key)
 #
-# Or configure a 3rd-party app:
+# You can also configure a 3rd-party app:
 #
 #     config :logger, level: :info
 #
@@ -31,3 +28,7 @@ config :pilot, Example,
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+config :example, Example.Pilot,
+  port:   8080,
+  router: Example.Router
