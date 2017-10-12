@@ -36,15 +36,15 @@ defmodule Pilot do
 
       {otp_app, config} = Pilot.Supervisor.config(__MODULE__, opts)
 
-      @config   config
-      @otp_app  otp_app
+      @pilot_config   config
+      @pilot_otp_app  otp_app
 
       def config do
-        @config
+        @pilot_config
       end
 
       def start_link(opts \\ []) do
-        Pilot.Supervisor.start_link(__MODULE__, @config, opts)
+        Pilot.Supervisor.start_link(__MODULE__, @pilot_config, opts)
       end
     end
   end
