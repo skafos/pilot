@@ -48,9 +48,6 @@ defmodule Pilot.Router do
         conn
       end
 
-      default_routing
-      |> Enum.each(fn({router, args}) -> plug(router, args) end)
-
       plug :match
 
       @before_compile Pilot.Router
@@ -84,6 +81,7 @@ defmodule Pilot.Router do
     end
   end
 
+  defmacro match(path, options, contents),          do: compile(nil, path, options, contents)
   defmacro get(path, options, contents \\ []),      do: compile(:get, path, options, contents)
   defmacro post(path, options, contents \\ []),     do: compile(:post, path, options, contents)
   defmacro put(path, options, contents \\ []),      do: compile(:put, path, options, contents)
@@ -96,6 +94,29 @@ defmodule Pilot.Router do
   defmacro static(path, route), do: plug_static(path, route)
   defmacro static(path),        do: plug_static(path, "/")
 
+  defmacro namespace(path, options) do
+    quote bind_quoted: [path: path, options: options] do
+      {target, options} = Keyword.pop(options, :to)
+
+      if is_nil(target) or !is_atom(target) do
+        raise ArgumentError, message: "expected :to to be an alias or an atom"
+      end
+
+      @target_namespace target
+      @target_opts      target.init([])
+
+      match path <> "/*glob", options do
+        Pilot.Router.Utils.namespace(
+          var!(conn),
+          var!(glob),
+          @target_namespace,
+          @target_opts
+        )
+      end
+
+    end
+  end
+
   defp plug_static(path, route) do
     quote do
       static_path = Path.join(@static_path, unquote(route))
@@ -105,15 +126,31 @@ defmodule Pilot.Router do
   end
 
   defp compile(method, expr, options, contents) do
-    {body, options} = cond do
-      content = contents[:do] ->
-        {content, options}
-      options[:do] ->
-        Keyword.pop(options, :do)
-      true ->
-        raise ArgumentError,  message: "Expecting :do as an option"
-    end
-
+    {body, options} =
+      cond do
+        Keyword.has_key?(contents, :do) ->
+          {contents[:do], options}
+        Keyword.has_key?(options, :do) ->
+          Keyword.pop(options, :do)
+        Keyword.has_key?(options, :to) ->
+          {to, options} = Keyword.pop(options, :to)
+          {init_opts, options} = Keyword.pop(options, :init_opts, [])
+          body =
+            quote do
+              @plug_router_to.call(var!(conn), @plug_router_init)
+            end
+          options =
+            quote do
+              to = unquote(to)
+              @plug_router_to to
+              @plug_router_init to.init(unquote(init_opts))
+              unquote(options)
+            end
+          {body, options}
+        true ->
+          raise ArgumentError,  message: "expected one of :to or :do to be given as an option"
+      end
+    
     options = options |> Utils.sanitize_options()
 
     quote bind_quoted: [
