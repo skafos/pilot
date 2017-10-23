@@ -6,4 +6,8 @@ defmodule Example.Router do
   get "/hello" do
     "Hello from Router!"
   end
+
+  match _ do
+    send_resp(conn, 404, "Not Found")
+  end
 end
