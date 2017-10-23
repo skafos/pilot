@@ -97,13 +97,15 @@ defmodule Pilot.Router do
   defmacro namespace(path, options) do
     quote bind_quoted: [path: path, options: options] do
       {target, options} = Keyword.pop(options, :to)
+      {options, plug_options} = Keyword.split(options, [:host, :private, :assigns])
+      plug_options = Keyword.get(plug_options, :init_opts, plug_options)
 
       if is_nil(target) or !is_atom(target) do
         raise ArgumentError, message: "expected :to to be an alias or an atom"
       end
 
       @target_namespace target
-      @target_opts      target.init([])
+      @target_opts      target.init(plug_options)
 
       match path <> "/*glob", options do
         Pilot.Router.Utils.namespace(
