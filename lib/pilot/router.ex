@@ -57,6 +57,8 @@ defmodule Pilot.Router do
 
   defmacro __before_compile__(_env) do
     quote do
+      import Pilot.Router, only: []
+
       def execute_match(_method, _path, _spec) do
         # Allows pass thru so plug won't die if there is more plugs after this.
         fn(conn) -> conn end
@@ -81,7 +83,7 @@ defmodule Pilot.Router do
     end
   end
 
-  defmacro match(path, options, contents),          do: compile(nil, path, options, contents)
+  defmacro match(path, options, contents \\ []),    do: compile(nil, path, options, contents)
   defmacro get(path, options, contents \\ []),      do: compile(:get, path, options, contents)
   defmacro post(path, options, contents \\ []),     do: compile(:post, path, options, contents)
   defmacro put(path, options, contents \\ []),      do: compile(:put, path, options, contents)
@@ -155,14 +157,16 @@ defmodule Pilot.Router do
     
     options = options |> Utils.sanitize_options()
 
+    {path, guards} = Utils.extract_path_guards(expr)
+
     quote bind_quoted: [
+      body:     Macro.escape(body, unquote: true),
+      guards:   guards,
       method:   method,
       options:  options,
-      expr:     expr,
-      body:     Macro.escape(body, unquote: true)
+      path:     path
     ] do
-      path                    = Path.join(@root_path, expr)
-      {path, guards}          = Utils.extract_path_guards(path)
+      path                    = Path.join(@root_path, path)
       {method, match, guards} = Pilot.Router.__route__(method, path, guards, options)
 
       params = %{} 
