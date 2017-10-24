@@ -17,10 +17,10 @@ defmodule Pilot.Router.Utils do
     {key |> to_string |> String.downcase, value}
   end
 
-  def sanitize_options(options) do
-    options
-    |> Enum.map(&default_keyword/1)
+  def sanitize_options(options) when is_list(options) do
+    Enum.map(options, &default_keyword/1)
   end
+  def sanitize_options(options), do: options
 
   def build_host_match(host) do
     %{}
@@ -49,6 +49,15 @@ defmodule Pilot.Router.Utils do
     |> Enum.map(fn({key, value}) -> {normalize_header(key), value} end)
     |> Enum.into(%{})
     |> Map.merge(spec)
+  end
+
+  @doc """
+  Namespaces requests to another Plug at a new path.
+  """
+  def namespace(%Plug.Conn{path_info: path, script_name: script} = conn, new_path, target, opts) do
+    {base, split_path} = Enum.split(path, length(path) - length(new_path))
+    conn = target.call(%{conn | path_info: split_path, script_name: script ++ base}, opts)
+    %{conn | path_info: path, script_name: script}
   end
 
   def extract_path_guards({:when, _, [path, guards]}) do

@@ -1,7 +1,9 @@
 defmodule Example.Router do
   use Pilot.Router
 
-  get "/test" do
-    "Hello, world!"
+  namespace "/users", to: Example.Router.Users
+
+  get "/hello" do
+    "Hello from Router!"
   end
 end
