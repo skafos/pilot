@@ -48,8 +48,6 @@ defmodule Pilot.Router do
         conn
       end
 
-      plug :match
-
       @before_compile Pilot.Router
       @before_compile Plug.Builder
     end
