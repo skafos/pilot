@@ -16,7 +16,7 @@ defmodule Pilot.Router do
       Module.register_attribute(__MODULE__, :plugs, accumulate: true)
 
       default_routing = [
-        "Elixir.Pilot.LiveReload":  [env: Mix.env],
+        # "Elixir.Pilot.LiveReload":  [env: Mix.env],
         "Elixir.Plug.Logger":       [],
       ]
 
@@ -47,8 +47,6 @@ defmodule Pilot.Router do
       def match(conn, _opts) do
         conn
       end
-
-      plug :match
 
       @before_compile Pilot.Router
       @before_compile Plug.Builder
