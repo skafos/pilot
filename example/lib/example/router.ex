@@ -3,7 +3,7 @@ defmodule Example.Router do
 
   namespace "/users", to: Example.Router.Users
 
-  get "/hello" do
+  get "/" do
     "Hello from Router!"
   end
 

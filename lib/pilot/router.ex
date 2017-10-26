@@ -166,7 +166,6 @@ defmodule Pilot.Router do
       options:  options,
       path:     path
     ] do
-      path                    = Path.join(@root_path, path)
       {method, match, guards} = Pilot.Router.__route__(method, path, guards, options)
 
       params = %{} 
