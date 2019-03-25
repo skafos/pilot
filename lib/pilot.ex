@@ -1,4 +1,5 @@
 defmodule Pilot do
+  require Logger
   @moduledoc """
   Defines a Pilot api endpoint
 

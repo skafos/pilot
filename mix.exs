@@ -8,7 +8,7 @@ defmodule Pilot.Mixfile do
       app:              :pilot,
       name:             "Pilot",
       version:          @version,
-      elixir:           "~> 1.4",
+      elixir:           "~> 1.5",
       build_embedded:   Mix.env == :prod,
       start_permanent:  Mix.env == :prod,
       deps:             deps(),
@@ -35,8 +35,9 @@ defmodule Pilot.Mixfile do
 
   defp deps do
     [
-      {:cowboy, "~> 1.1"},
-      {:plug,   "~> 1.3"},
+      {:cowboy, "~> 2.5"},
+      {:plug_cowboy, "~> 2.0"},
+      {:plug,   "~> 1.5"},
       {:poison, "~> 3.1"}
     ]
   end

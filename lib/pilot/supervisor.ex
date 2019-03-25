@@ -47,7 +47,10 @@ defmodule Pilot.Supervisor do
     Logger.debug(fn -> "Starting pilot on port #{inspect(port)} " <>
                  "routing through #{inspect(router)}" end)
 
-    children = [Plug.Adapters.Cowboy.child_spec(:http, router, [], [port: port])]
-    supervise(children, strategy: :one_for_one)
+    children = [
+      {Plug.Cowboy, scheme: :http, plug: router, options: [port: port]}
+    ]
+
+    Supervisor.init(children, strategy: :one_for_one)    
   end
 end
