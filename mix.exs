@@ -37,7 +37,7 @@ defmodule Pilot.Mixfile do
     [
       {:cowboy, "~> 2.5"},
       {:plug_cowboy, "~> 2.0"},
-      {:plug,   "~> 1.4"},
+      {:plug,   "~> 1.5"},
       {:poison, "~> 3.1"}
     ]
   end
